@@ -1,0 +1,33 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "comfyui.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/part-of: atom
+spec:
+  virtualhost:
+    fqdn: {{ required "ingress host is required" .Values.ingress.host }}
+    {{- if .Values.ingress.tls.enabled }}
+    tls:
+      secretName: {{ .Values.ingress.tls.secretName }}
+    {{- end }}
+    corsPolicy:
+      allowCredentials: true
+      allowOrigin:
+      - '*'
+      allowMethods: [GET, POST, PUT, DELETE, OPTIONS, PATCH]
+      exposeHeaders: ['*']
+      allowHeaders: ['*']
+      maxAge: 30m
+  routes:
+  - conditions:
+    - prefix: /comfyui
+    services:
+    - name: {{ $fullName }}
+      port: {{ $svcPort }}
+{{- end }}

@@ -1,6 +1,7 @@
 MODEL_PATH ?= $(HOME)/models
 COMFYUI_VERSION ?= 8115d8c
 COMFYUI_MANAGER_VERSION ?= b6bfb66
+IMAGE_REPO ?= reg.supremind.info/product/data/ai_infra
 
 
 # Cluster
@@ -21,33 +22,33 @@ cluster-removal:
 
 # Docker - Plain ComfyUI
 docker-build:
-	docker build -t ghcr.io/curt-park/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION) \
+	docker build -t $(IMAGE_REPO)/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION) \
 		--build-arg COMFYUI_VERSION=$(COMFYUI_VERSION) \
 		--build-arg COMFYUI_MANAGER_VERSION=$(COMFYUI_MANAGER_VERSION) \
 		-f docker/comfyui.Dockerfile .
 
 docker-push:
-	docker push ghcr.io/curt-park/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION)
+	docker push $(IMAGE_REPO)/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION)
 
 docker-run:
 	docker run -it --gpus all -p 50000:50000 \
 		-v $(HOME)/models:/home/workspace/ComfyUI/models \
-		ghcr.io/curt-park/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION)
+		$(IMAGE_REPO)/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION)
 
 
 # Docker - Jupyter ComfyUI
 docker-build-jupyter:
-	docker build -t ghcr.io/curt-park/comfyui-onprem-k8s:comfyui-jupyter-$(COMFYUI_VERSION) \
-		--build-arg BASE_IMAGE=ghcr.io/curt-park/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION) \
+	docker build -t $(IMAGE_REPO)/comfyui-onprem-k8s:comfyui-jupyter-$(COMFYUI_VERSION) \
+		--build-arg BASE_IMAGE=$(IMAGE_REPO)/comfyui-onprem-k8s:comfyui-$(COMFYUI_VERSION) \
 		-f docker/comfyui-jupyter.Dockerfile .
 
 docker-push-jupyter:
-	docker push ghcr.io/curt-park/comfyui-onprem-k8s:comfyui-jupyter-$(COMFYUI_VERSION)
+	docker push $(IMAGE_REPO)/comfyui-onprem-k8s:comfyui-jupyter-$(COMFYUI_VERSION)
 
 docker-run-jupyter:
 	docker run -it --gpus all -p 8888:8888 \
 		-v $(HOME)/models:/home/workspace/ComfyUI/models \
-		ghcr.io/curt-park/comfyui-onprem-k8s:comfyui-jupyter-$(COMFYUI_VERSION)
+		$(IMAGE_REPO)/comfyui-onprem-k8s:comfyui-jupyter-$(COMFYUI_VERSION)
 
 
 # Utils

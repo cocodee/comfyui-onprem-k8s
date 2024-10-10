@@ -1,0 +1,21 @@
+# request a certificate from cert-manager
+{{- if .Capabilities.APIVersions.Has "cert-manager.io/v1/Certificate" }}
+apiVersion: cert-manager.io/v1
+{{- else }}
+apiVersion: cert-manager.io/v1alpha2
+{{- end }}
+kind: Certificate
+metadata:
+  name: {{ include "comfyui.fullname" . }}-tls
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/part-of: atom
+spec:
+  dnsNames:
+  - {{ required "ingress host is required" .Values.ingress.host }}
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: letsencrypt
+  secretName: {{ .Values.ingress.tls.secretName }}
