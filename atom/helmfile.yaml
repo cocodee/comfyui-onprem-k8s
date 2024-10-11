@@ -1,0 +1,8 @@
+- name: comfyui
+  chart: ./charts/comfyui
+  namespace: atom-job
+  needs:
+  - atom-job/atom-job-ns
+  labels:
+    stage: atom
+  <<: *default
